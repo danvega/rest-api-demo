@@ -1,53 +1,64 @@
 package dev.danvega.restapidemo.controller;
 
+import dev.danvega.restapidemo.dao.BookDAO;
 import dev.danvega.restapidemo.model.Book;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
 
-    private List<Book> books;
+    private final BookDAO bookDAO;
 
-    public BookController() {
-        books = List.of(
-                new Book(1,"Hacking with Spring Boot 2.3: Reactive Edition", "Greg L. Turnquist", "Amazon"),
-                new Book(2, "Spring Boot: Up and Running", "Mark Heckler", "OReilly Media, Inc")
-                );
+    public BookController(BookDAO bookDAO) {
+        this.bookDAO = bookDAO;
     }
 
     @GetMapping
     public List<Book> findAll() {
-        return books;
+        return bookDAO.findAll();
     }
 
-    @GetMapping("/{id}") // api/books/1
+    @GetMapping("/{id}")
     public Book findById(@PathVariable Integer id) {
-       return books.stream().filter(book -> book.getId() == id).findFirst().get();
+//        Optional<Book> book = bookDAO.findById(id);
+//        if( book.isPresent() ) {
+//            return book.get();
+//        } else {
+//            throw new RuntimeException("Book with id of " + id + " not found.");
+//        }
+
+//        return bookDAO.findById(id).orElseThrow(RuntimeException::new);
+        return bookDAO.findById(id).orElseThrow(() -> new RuntimeException("Book with id of " + id + " not found."));
     }
 
     @PostMapping
-    public void create(@Valid Book book) {
-        // before we event get here
+    public Book create(@Valid @RequestBody Book book) {
+        return bookDAO.create(book);
     }
 
     @PutMapping("/{id}")
-    public void update(@Valid Book book) {
-        // update an existing book
+    public Book update(@Valid @RequestBody Book book, @PathVariable Integer id) {
+        return bookDAO.update(book,id);
     }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
-        // delete by id
+        bookDAO.delete(id);
     }
 
-    // more endpoints
+    @GetMapping("/findby")
+    public List<Book> findBookByAuthor(@RequestParam String author) {
+        return null;
+    }
 
-    public void findBookByAuthor() {
-
+    public List<Book> findByPublisher(@RequestParam String publisher) {
+        return null;
     }
 
 }

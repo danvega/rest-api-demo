@@ -1,18 +1,22 @@
 package dev.danvega.restapidemo.model;
 
-import org.apache.tomcat.jni.Address;
-
-import javax.validation.constraints.NotEmpty;
-
 public class Book {
 
-    private int id;
-    @NotEmpty(message = "Please make sure you enter a title for a book.")
+    private Integer id;
     private String title;
     private String author;
     private String publisher;
 
-    public Book(int id, String title, String author, String publisher) {
+    public Book() {
+    }
+
+    public Book(String title, String author, String publisher) {
+        this.title = title;
+        this.author = author;
+        this.publisher = publisher;
+    }
+
+    public Book(Integer id, String title, String author, String publisher) {
         this.id = id;
         this.title = title;
         this.author = author;
